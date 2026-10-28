@@ -60,7 +60,7 @@
 
         #app-container {
             width: 100%;
-            max-w: 480px;
+            max-width: 480px; /* max-w 오타 수정 완료 */
             padding: 1.5rem;
         }
     </style>
@@ -140,7 +140,8 @@
         const questions = [
             { 
                 q: "Q1. 할로윈 파티 의상을 고를 때, 당신이 더 듣고 싶은 반응은?", 
-                a: { text: "\"뭐 이런생각을 했냐" 무수한 칭찬과 붐따", type: 'C' }, 
+                // 아래 줄의 "했냐\" 부분에 누락되었던 역슬래시(\)를 추가해 문법 오류를 해결했습니다.
+                a: { text: "\"뭐 이런생각을 했냐\" 무수한 칭찬과 붐따", type: 'C' }, 
                 b: { text: "\"제대로 준비했네…… \" 감탄과 미적인 감상", type: 'S' } 
             },
             { 
@@ -206,135 +207,4 @@
             },
             "미라": {
                 name: "미라 🤕",
-                desc: "허술한 듯 노골적인 드레싱 코스튬. 타이트함과 길이 조절로 수위도 텐션도 조절해봅시다. 발이 꼬이거나 천을 잡혀 묶이는 걸 주의하세요."
-            },
-            "뱀파이어": {
-                name: "뱀파이어 🧛‍♀️",
-                desc: "고딕 & 클래식으로 정제된 섹시함의 정수. 상대를 아찔하게 위협하고 깨물어봅시다. 과다출혈을 조심하세요."
-            },
-            "유령신부": {
-                name: "유령 신부 👰‍♀️",
-                desc: " 은은하고 애절한(?) 분위기로 압도하는 코스튬. 웨딩 로망을 간접적으로 실현해봅시다. 웨딩 드레스일지 웨딩 란제리일지는 마음대로."
-            },
-            "강시": {
-                name: "강시 🧟‍♀️",
-                desc: " 치파오와 구속이 합쳐진 피학 취향 코스튬. 가장 취약한 상태로 자신을 제공해봅시다. ※ 왠만하면 합의 단어를 미리 정해두세요. "
-            },
-            "서큐버스": {
-                name: "서큐버스 🦇",
-                desc: " 더 설명할 필요가 있을까요? 준비된 승부 코스튬을 입고 쟁취하십시오. 싱싱한 (싱싱하지 않은 취향도 존중합니다) 사람은 수 없이 많습니다. "
-            },
-            "늑대인간": {
-                name: "늑대인간 🐺",
-                desc: " 인간에게는 없는 기관으로 귀여움과 야생성을 표현할 수 있는 코스튬. 짐승의 본능을 핑계로 마음껏 달려들어보세요. 개가 될지 늑대인간이 될지는 당신에게 달렸습니다."
-            }
-        };
-
-        // --- 3. 상태 변수 ---
-        let currentQuestionIndex = 0;
-        let scores = { C: 0, S: 0, U: 0, E: 0, A: 0, P: 0, F: 0, R: 0 };
-
-        // DOM 요소
-        const screenStart = document.getElementById('start-screen');
-        const screenQuestion = document.getElementById('question-screen');
-        const screenResult = document.getElementById('result-screen');
-        const questionText = document.getElementById('question-text');
-        const btnA = document.getElementById('btn-a');
-        const btnB = document.getElementById('btn-b');
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-
-        // --- 4. 함수 정의 ---
-        function startTest() {
-            currentQuestionIndex = 0;
-            scores = { C: 0, S: 0, U: 0, E: 0, A: 0, P: 0, F: 0, R: 0 };
-            
-            screenStart.classList.add('hidden');
-            screenResult.classList.add('hidden');
-            screenQuestion.classList.remove('hidden');
-            
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            // 애니메이션 재설정을 위한 트릭
-            screenQuestion.classList.remove('fade-in');
-            void screenQuestion.offsetWidth; 
-            screenQuestion.classList.add('fade-in');
-
-            const currentQ = questions[currentQuestionIndex];
-            questionText.innerText = currentQ.q;
-            
-            // 버튼에 타입 정보와 텍스트 연결
-            btnA.innerText = currentQ.a.text;
-            btnA.dataset.type = currentQ.a.type;
-            
-            btnB.innerText = currentQ.b.text;
-            btnB.dataset.type = currentQ.b.type;
-
-            // 프로그레스 바 업데이트
-            const progressPercent = ((currentQuestionIndex + 1) / questions.length) * 100;
-            progressBar.style.width = progressPercent + "%";
-            progressText.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
-        }
-
-        function selectAnswer(choice) {
-            const selectedType = choice === 'A' ? btnA.dataset.type : btnB.dataset.type;
-            scores[selectedType]++;
-
-            currentQuestionIndex++;
-
-            if (currentQuestionIndex < questions.length) {
-                renderQuestion();
-            } else {
-                calculateResult();
-            }
-        }
-
-        function calculateResult() {
-            // 축별 최종 성향 계산
-            const axis1 = scores.C > scores.S ? 'C' : 'S';
-            const axis2 = scores.U > scores.E ? 'U' : 'E';
-            const axis3 = scores.A > scores.P ? 'A' : 'P';
-            const axis4 = scores.F > scores.R ? 'F' : 'R';
-
-            const combo = axis1 + axis2 + axis3 + axis4;
-            let finalCostume = "";
-
-            // 매핑 로직 (요청하신 분기 완벽 적용 + 안전한 Fallback)
-            if (axis1 === 'C' && axis2 === 'U' && axis3 === 'A' && axis4 === 'F') finalCostume = "유령";
-            else if (axis1 === 'C' && axis2 === 'U' && axis3 === 'A' && axis4 === 'R') finalCostume = "가면살인마";
-            else if (axis1 === 'C' && axis2 === 'U' && axis3 === 'P') finalCostume = "유령"; // fallback
-            
-            else if (axis1 === 'C' && axis2 === 'E' && axis3 === 'A') finalCostume = "소악마"; // F/R 무관
-            else if (axis1 === 'C' && axis2 === 'E' && axis3 === 'P') finalCostume = "미라"; // F/R 무관
-            
-            else if (axis1 === 'S' && axis2 === 'U' && axis3 === 'A') finalCostume = "뱀파이어"; // F/R 무관
-            else if (axis1 === 'S' && axis2 === 'U' && axis3 === 'P' && axis4 === 'F') finalCostume = "유령신부";
-            else if (axis1 === 'S' && axis2 === 'U' && axis3 === 'P' && axis4 === 'R') finalCostume = "강시";
-            
-            else if (axis1 === 'S' && axis2 === 'E' && axis3 === 'A' && axis4 === 'F') finalCostume = "서큐버스";
-            else if (axis1 === 'S' && axis2 === 'E' && axis3 === 'A' && axis4 === 'R') finalCostume = "늑대인간";
-            else if (axis1 === 'S' && axis2 === 'E' && axis3 === 'P') finalCostume = "강시"; // fallback
-            
-            else finalCostume = "유령"; // 혹시 모를 에러 방지 기본값
-
-            showResult(finalCostume);
-        }
-
-        function showResult(costumeKey) {
-            screenQuestion.classList.add('hidden');
-            screenResult.classList.remove('hidden');
-
-            const result = resultData[costumeKey];
-            document.getElementById('result-title').innerText = result.name;
-            document.getElementById('result-desc').innerText = result.desc;
-        }
-
-        function restartTest() {
-            screenResult.classList.add('hidden');
-            startTest();
-        }
-    </script>
-</body>
-</html>
+                desc: "허술한 듯 노골적인 드레싱 코스튬. 타이트함과 길이 조절로 수위도 텐션도 조절
